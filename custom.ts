@@ -53,7 +53,7 @@ namespace SmartCar {
   export function motor(motor: LRB, dir: Dir, speed: number) {
     if (motor == 0) {
       if (dir == 0) {
-        i2c_write(0x01, );
+        i2c_write(0x01, 0);
         i2c_write(0x02, Math.round(speed + speed*l_bias/100));
       }
       if (dir == 1) {
