@@ -106,10 +106,10 @@ namespace SmartCar {
     }
   }
 
-  //% block="motor $motor plus $bias"
+  //% block="motor $motor + $bias"
   //% group="Motor" weight=80 blockGap=4
   //% bias.min=0 bias.max=50
-  export function bias(motor: LR, bias: number): void {
+  export function set_bias(motor: LR, bias: number): void {
     if (motor == 0) {
       l_bias = bias;
       r_bias = 0;
