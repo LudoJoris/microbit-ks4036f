@@ -22,24 +22,6 @@ enum Dir {
   //% block="achteruit"
   CCW = 1
 }
-enum RGB {
-  //% block=rood
-  Red = 0x7F0000,
-  //% block=groen
-  Green = 0x007F00,
-  //% block=blauw
-  Blue = 0x00007F,
-  //% block=wit
-  White = 0x7F7F7F,
-  //% block=uit
-  Black = 0x000000,
-  //% block=geel
-  Yellow = 0x7F7F00,
-  //% block=cyaan
-  Cyan = 0x007F7F,
-  //% block=magenta
-  Magenta = 0x07F007F
-}
 
 //% color="#AA278D"
 namespace SmartCar {
@@ -198,12 +180,6 @@ namespace SmartCar {
   //% blue.min=0 blue.max=255
   export function rgb(red: number, green: number, blue: number): number {
     return pack_RGB(red, green, blue);
-  }
-
-  //% block="$color"
-  //% group="LED" weight=40 blockGap=8
-  export function colors(color: RGB): number {
-    return color;
   }
 
 
