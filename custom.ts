@@ -44,51 +44,45 @@ enum RGB {
 //% color="#AA278D"
 namespace SmartCar {
 
-  let left_bias = 0;
-  let right_bias = 0;
-  let left_speed = 0;
-  let right_speed = 0;
+  let l_bias = 0;
+  let r_bias = 0;
 
   //% block="motor $motor richting $dir snelheid $speed"
   //% group="Motor" weight=90 blockGap=4
   //% speed.min=0 speed.max=255
   export function motor(motor: LRB, dir: Dir, speed: number) {
     if (motor == 0) {
-      left_speed = speed + left_bias;
       if (dir == 0) {
-        i2c_w(0x01, 0);
-        i2c_w(0x02, left_speed);
+        i2c_write(0x01, );
+        i2c_write(0x02, Math.round(speed + speed*l_bias/100));
       }
       if (dir == 1) {
-        i2c_w(0x01, left_speed);
-        i2c_w(0x02, 0);
+        i2c_write(0x01, speed);
+        i2c_write(0x02, 0);
       }
     }
     if (motor == 1) {
-      right_speed = speed + right_bias;
       if (dir == 0) {
-        i2c_w(0x03, right_speed);
-        i2c_w(0x04, 0);
+        i2c_write(0x03, Math.round(speed + speed*r_bias/100));
+        i2c_write(0x04, 0);
       }
       if (dir == 1) {
-        i2c_w(0x03, 0);
-        i2c_w(0x04, right_speed);
+        i2c_write(0x03, 0);
+        i2c_write(0x04, speed);
       }
     }
     if (motor == 2) {
-      left_speed = speed + left_bias;
-      right_speed = speed + right_bias;
       if (dir == 0) {
-        i2c_w(0x01, 0);
-        i2c_w(0x02, left_speed);
-        i2c_w(0x03, right_speed);
-        i2c_w(0x04, 0);
+        i2c_write(0x01, 0);
+        i2c_write(0x02, Math.round(speed + speed*l_bias/100));
+        i2c_write(0x03, Math.round(speed + speed*r_bias/100));
+        i2c_write(0x04, 0);
       }
       if (dir == 1) {
-        i2c_w(0x01, left_speed);
-        i2c_w(0x02, 0);
-        i2c_w(0x03, 0);
-        i2c_w(0x04, right_speed);
+        i2c_write(0x01, speed);
+        i2c_write(0x02, 0);
+        i2c_write(0x03, 0);
+        i2c_write(0x04, speed);
       }
     }
   }
@@ -97,71 +91,45 @@ namespace SmartCar {
   //% group="Motor" weight=85  blockGap=4
   export function stop(motor: LRB) {
     if (motor == 0) {
-      i2c_w(0x01, 0);
-      i2c_w(0x02, 0);
+      i2c_write(0x01, 0);
+      i2c_write(0x02, 0);
     }
     if (motor == 1) {
-      i2c_w(0x03, 0);
-      i2c_w(0x04, 0);
+      i2c_write(0x03, 0);
+      i2c_write(0x04, 0);
     }
     if (motor == 2) {
-      i2c_w(0x01, 0);
-      i2c_w(0x02, 0);
-      i2c_w(0x03, 0);
-      i2c_w(0x04, 0);
+      i2c_write(0x01, 0);
+      i2c_write(0x02, 0);
+      i2c_write(0x03, 0);
+      i2c_write(0x04, 0);
     }
   }
 
-  //% block="snelheid $motor"
-  //% group="Motor"
-  export function get_speed(motor: LR): number {
-    if (motor == 0) {
-      return left_speed;
-    }
-    if (motor == 1) {
-      return right_speed;
-    }
-    return 0;
-  }
-  
   //% block="motor $motor plus $bias"
   //% group="Motor" weight=80 blockGap=4
   //% bias.min=0 bias.max=50
-  export function set_bias(motor: LR, bias: number): void {
-    left_bias = 0;
-    right_bias = 0;
+  export function bias(motor: LR, bias: number): void {
     if (motor == 0) {
-      left_bias = bias;
+      l_bias = bias;
+      r_bias = 0;
     }
     if (motor == 1) {
-      right_bias = bias;
+      l_bias = 0;
+      r_bias = bias;
     }
-  }
-
-  //% block="motor bias $motor"
-  //% group="Motor"
-  export function get_bias(motor: LR): number {
-    if (motor == 0) {
-      return left_bias;
-    }
-    if (motor == 1) {
-      return right_bias;
-    }
-    return 0;
   }
 
   //% block="spin %LR met snelheid %speed gedurende %ms ms"
   //% group="Motor"
   export function spin(dir: LR, speed: number, ms: number): void {
-    left_speed = speed + left_bias;
-    right_speed = speed + right_bias;
     if (dir == 0) {
-      motor(0, 1, left_speed);
-      motor(1, 0, right_speed);
+      motor(0, 1, Math.round(speed + speed*l_bias/100));
+      motor(1, 0, Math.round(speed + speed*r_bias/100));
     }
     if (dir == 1) {
-      motor(0, 0, left_speed);
-      motor(1, 1, right_speed);
+      motor(0, 0, Math.round(speed + speed*l_bias/100));
+      motor(1, 1, Math.round(speed + speed*r_bias/100));
     }
     basic.pause(ms);
     stop(2);
@@ -178,22 +146,22 @@ namespace SmartCar {
 
     switch (led) {
       case 0:
-        i2c_w(0x08, r);
-        i2c_w(0x07, g);
-        i2c_w(0x06, b);
+        i2c_write(0x08, r);
+        i2c_write(0x07, g);
+        i2c_write(0x06, b);
         break;
       case 1:
-        i2c_w(0x09, r);
-        i2c_w(0x0a, g);
-        i2c_w(0x05, b);
+        i2c_write(0x09, r);
+        i2c_write(0x0a, g);
+        i2c_write(0x05, b);
         break;
       case 2:
-        i2c_w(0x08, r);
-        i2c_w(0x07, g);
-        i2c_w(0x06, b);
-        i2c_w(0x09, r);
-        i2c_w(0x0a, g);
-        i2c_w(0x05, b);
+        i2c_write(0x08, r);
+        i2c_write(0x07, g);
+        i2c_write(0x06, b);
+        i2c_write(0x09, r);
+        i2c_write(0x0a, g);
+        i2c_write(0x05, b);
         break;
     }
   }
@@ -203,22 +171,22 @@ namespace SmartCar {
   export function reset_led(led: LRB) {
     switch (led) {
       case 0:
-        i2c_w(0x08, 255);
-        i2c_w(0x07, 255);
-        i2c_w(0x06, 255);
+        i2c_write(0x08, 255);
+        i2c_write(0x07, 255);
+        i2c_write(0x06, 255);
         break;
       case 1:
-        i2c_w(0x09, 255);
-        i2c_w(0x0a, 255);
-        i2c_w(0x05, 255);
+        i2c_write(0x09, 255);
+        i2c_write(0x0a, 255);
+        i2c_write(0x05, 255);
         break;
       case 2:
-        i2c_w(0x08, 255);
-        i2c_w(0x07, 255);
-        i2c_w(0x06, 255);
-        i2c_w(0x09, 255);
-        i2c_w(0x0a, 255);
-        i2c_w(0x05, 255);
+        i2c_write(0x08, 255);
+        i2c_write(0x07, 255);
+        i2c_write(0x06, 255);
+        i2c_write(0x09, 255);
+        i2c_write(0x0a, 255);
+        i2c_write(0x05, 255);
         break;
     }
   }
@@ -242,7 +210,7 @@ namespace SmartCar {
   pins.setPull(DigitalPin.P14, PinPullMode.PullNone);
   //% block="afstand (cm)"
   //% group="Ultrasone sensor" weight=70 blockGap=4
-  export function ping(): number {
+  export function distance(): number {
 
     pins.digitalWritePin(DigitalPin.P14, 0);
     control.waitMicros(2);
@@ -297,7 +265,7 @@ function unpack_blue(rgb: number): number {
   return (rgb) & 0xFF;
 }
 
-function i2c_w(reg: number, value: number) {
+function i2c_write(reg: number, value: number) {
   let buf = pins.createBuffer(2)
   buf[0] = reg
   buf[1] = value
